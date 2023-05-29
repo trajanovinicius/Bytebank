@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(BytebankApp());
+  runApp(const BytebankApp());
 }
 
 class BytebankApp extends StatelessWidget {
+  const BytebankApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
         home: Scaffold(
       body: FormularioTransferencia(),
     ));
@@ -15,7 +17,11 @@ class BytebankApp extends StatelessWidget {
 }
 
 class FormularioTransferencia extends StatelessWidget {
-  const FormularioTransferencia({super.key});
+  final TextEditingController _controladorCampoNumeroConta =
+      TextEditingController();
+  final TextEditingController _controladorCampoValor = TextEditingController();
+
+  FormularioTransferencia({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,20 +29,22 @@ class FormularioTransferencia extends StatelessWidget {
         appBar: AppBar(title: const Text('Criando Transferência')),
         body: Column(
           children: <Widget>[
-            const Padding(
-              padding: EdgeInsets.all(16.0),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: TextField(
-                style: TextStyle(fontSize: 20.0),
-                decoration: InputDecoration(
+                controller: _controladorCampoNumeroConta,
+                style: const TextStyle(fontSize: 20.0),
+                decoration: const InputDecoration(
                     labelText: 'Número da conta', hintText: '0000'),
                 keyboardType: TextInputType.number,
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.all(16.0),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: TextField(
-                style: TextStyle(fontSize: 20.0),
-                decoration: InputDecoration(
+                controller: _controladorCampoValor,
+                style: const TextStyle(fontSize: 20.0),
+                decoration: const InputDecoration(
                   icon: Icon(Icons.monetization_on),
                   labelText: 'Valor',
                   hintText: '0.00',
@@ -46,7 +54,17 @@ class FormularioTransferencia extends StatelessWidget {
             ),
             ElevatedButton(
               child: const Text('confirmar'),
-              onPressed: () => {},
+              onPressed: () {
+                final numeroConta =
+                    int.tryParse(_controladorCampoNumeroConta.text);
+                final valor = double.tryParse(_controladorCampoValor.text);
+                if (numeroConta != null && valor != null) {
+                  final transferenciaCriada = Transferencia(valor, numeroConta);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('$transferenciaCriada')),
+                  );
+                }
+              },
             ),
           ],
         ));
@@ -98,6 +116,11 @@ class Transferencia {
   final int numeroConta;
 
   Transferencia(this.valor, this.numeroConta);
+
+  @override
+  String toString() {
+    return 'Transferência{valor: $valor, numeroConta: $numeroConta}';
+  }
 }
 
 
